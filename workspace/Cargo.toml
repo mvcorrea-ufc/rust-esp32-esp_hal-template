@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = [
+    "blink",
+]
+
+# This profile is inherited by all workspace members
+# It optimizes for size, which is crucial for embedded systems.
+[profile.release]
+opt-level = "s"

@@ -1,8 +1,12 @@
-[workspace]
-members = [
-    "workspace/blink",
-]
+[package]
+name = "blink"
+version = "0.1.0"
+edition = "2021"
 
-# This profile is inherited by all workspace members
-[profile.release]
-opt-level = "s"
+[dependencies]
+esp-hal = { version = "0.23.1", features = ["esp32c3"] }
+esp-backtrace = { version = "0.17.0", features = ["esp32c3", "panic-handler", "exception-handler"] }
+esp-println = { version = "0.15.0", features = ["esp32c3"] }
+
+[features]
+default = []

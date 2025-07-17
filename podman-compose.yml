@@ -6,7 +6,7 @@ services:
     ports:
       - "2222:22"
     volumes:
-      - .:/home/vscode/project:z
+      - ./workspace:/workspace:z
       - /dev:/dev:rw  # Mount entire /dev directory
     # --- OR (if not mounting /dev) ---
     # --- IMPORTANT ---

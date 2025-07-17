@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     libudev-dev \
     curl \
     git \
+    neovim usbutils \
     openssh-server \
     && rm -rf /var/lib/apt/lists/*
 
@@ -51,16 +52,16 @@ RUN echo 'vscode:vscode' | chpasswd
 RUN usermod -aG sudo vscode
 RUN usermod -aG dialout vscode
 
-# Configure the SSH server.
-RUN mkdir /var/run/sshd
-# Allow the 'root' user to log in (useful for debugging the container).
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-# Ensure that password authentication is enabled.
-RUN sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+# Configure the SSH server for the 'vscode' user.
+RUN mkdir -p /var/run/sshd /home/vscode/.ssh
+# Ensure password authentication is explicitly enabled in the SSH server config.
+RUN echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+# Ensure the vscode user owns their home directory and the workspace
+RUN chown -R vscode:vscode /home/vscode /workspace
 
 # --- Finalization ---
 # Set the default working directory for the project.
-WORKDIR /home/vscode/project
+WORKDIR /workspace
 
 # Expose port 22 to allow external SSH connections.
 EXPOSE 22
