@@ -52,13 +52,16 @@ RUN echo 'vscode:vscode' | chpasswd
 RUN usermod -aG sudo vscode
 RUN usermod -aG dialout vscode
 
-# Configure the SSH server for the 'vscode' user.
-RUN mkdir -p /var/run/sshd /home/vscode/.ssh
-# Ensure password authentication is explicitly enabled in the SSH server config.
-RUN echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+# Configure the SSH server.
+RUN mkdir -p /var/run/sshd /home/vscode/.ssh && chmod 700 /home/vscode/.ssh
+
+# Update sshd_config to robustly enable password auth and disable root login.
+RUN sed -i 's/^#?PermitRootLogin .*/PermitRootLogin no/' /etc/ssh/sshd_config && \
+    sed -i 's/^#?PasswordAuthentication .*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
 # Create the workspace directory and set ownership before mounting.
 RUN mkdir /workspace
-# Ensure the vscode user owns their home directory and the workspace
+# Ensure the vscode user owns their home directory and the workspace.
 RUN chown -R vscode:vscode /home/vscode /workspace
 
 # --- Finalization ---
