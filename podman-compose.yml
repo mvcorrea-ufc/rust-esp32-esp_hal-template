@@ -12,7 +12,7 @@ services:
     userns_mode: "keep-id"
     volumes:
       - ./workspace:/workspace:z
-      - /dev:/dev:rw  # Mount entire /dev directory
+      #  - /dev:/dev:rw  # Mount entire /dev directory
     # --- OR (if not mounting /dev) ---
     # --- IMPORTANT ---
     # For espflash to work, you need to expose your ESP32's USB device to the container.
@@ -20,11 +20,13 @@ services:
     #    You can use the 'ls /dev/tty*' command to list devices.
     # 2. Uncomment the 'devices' section below and replace '/dev/ttyUSB0' with the correct path.
     #
-    # devices:
+    devices:
     #   - "/dev/ttyUSB0:/dev/ttyUSB0"
+      - "/dev/ttyACM0:/dev/ttyACM0"
     #
     # If you are on a system with SELinux (like Fedora), you might need to add the 'privileged' flag.
     privileged: true
+    userns: host
     cap_add:
       - SYS_ADMIN
     restart: unless-stopped
