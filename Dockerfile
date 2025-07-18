@@ -21,6 +21,8 @@ RUN apt-get update && apt-get install -y \
 
 # --- User and Toolchain Installation ---
 
+
+
 # # Create a 'vscode' user with a standard UID. Podman's userns_mode will handle mapping.
 # RUN useradd -m -s /bin/bash -u 1000 vscode
 
@@ -42,7 +44,7 @@ RUN sed -i 's/^#?PermitRootLogin .* /PermitRootLogin yes/' /etc/ssh/sshd_config 
     sed -i 's/^#?PasswordAuthentication .* /PasswordAuthentication yes/' /etc/ssh/sshd_config
 
 # Set a password for the root user.
-RUN echo 'root:root' | chpasswd
+RUN echo 'root:rootpass' | chpasswd
 
 
 # # Switch to the 'vscode' user to install the Rust toolchain in their home directory.
@@ -50,15 +52,22 @@ RUN echo 'root:root' | chpasswd
 # WORKDIR /home/vscode
 
 # Install Rust via rustup.
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+##RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # Add the Cargo bin directory to the user's PATH.
-ENV PATH="/root/.cargo/bin:${PATH}"
+##ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install the cross-compilation target for the ESP32-C3.
-RUN rustup target add riscv32imc-unknown-none-elf
+##RUN rustup target add riscv32imc-unknown-none-elf
 
 # Install espflash and ldproxy for the user.
-RUN cargo install espflash ldproxy
+##RUN cargo install espflash ldproxy
+
+
+
+
+
+
+
 
 # # Create the .ssh directory as the 'vscode' user for correct ownership.
 # RUN mkdir /home/vscode/.ssh && chmod 700 /home/vscode/.ssh
