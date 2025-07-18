@@ -23,13 +23,20 @@ RUN apt-get update && apt-get install -y \
 
 # Create a 'vscode' user with a standard UID. Podman's userns_mode will handle mapping.
 RUN useradd -m -s /bin/bash -u 1000 vscode
+
 # Set a simple password ('vscode').
 RUN echo 'vscode:vscode' | chpasswd
+
 # Add the user to the 'dialout' group for serial port access.
 RUN usermod -aG dialout vscode
+
+# create the /workspace directory for project files and set permissions.
+RUN mkdir /workspace && chown vscode:vscode /workspace
+
 # Grant passwordless sudo privileges to the 'vscode' user.
 RUN echo "vscode ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/vscode && \
     chmod 0440 /etc/sudoers.d/vscode
+    
 # Update sshd_config to robustly enable password auth and disable root login.
 RUN sed -i 's/^#?PermitRootLogin .* /PermitRootLogin no/' /etc/ssh/sshd_config && \
     sed -i 's/^#?PasswordAuthentication .* /PasswordAuthentication yes/' /etc/ssh/sshd_config
@@ -54,7 +61,7 @@ RUN cargo install espflash ldproxy
 RUN mkdir /home/vscode/.ssh && chmod 700 /home/vscode/.ssh
 
 # Ensure the vscode user owns their home directory as a safeguard.
-RUN chown -R vscode:vscode /home/vscode /workspace
+RUN chown -R vscode:vscode /home/vscode
 
 # --- Finalization ---
 # Set the default working directory for the project.
